@@ -1,0 +1,17 @@
+{
+  "name": "hierarchical-tree-loc8",
+  "author": "vinh phan - phanvinh0526@gmail.com",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "start-server": "node app.js",
+    "test": "mocha './test/**/*.spec.js'"
+  },
+  "dependencies": {
+    "chai": "^4.2.0",
+    "ejs": "^3.1.3",
+    "express": "^4.17.1",
+    "mocha": "^8.0.1",
+    "nodemon": "^2.0.4"
+  }
+}
