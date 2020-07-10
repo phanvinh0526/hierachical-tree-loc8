@@ -1,122 +1,104 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import SvgIcon from '@material-ui/core/SvgIcon';
-import { fade, makeStyles, withStyles } from '@material-ui/core/styles';
-import TreeView from '@material-ui/lab/TreeView';
-import TreeItem from '@material-ui/lab/TreeItem';
-import Collapse from '@material-ui/core/Collapse';
-import { useSpring, animated } from 'react-spring';
+import React, { useState, useEffect } from 'react';
+import axios from "axios";
+import { makeStyles, Grid, Paper } from '@material-ui/core';
+import TreeDisplay from '../components/TreeDisplay';
+import TableDisplay from '../components/TableDisplay';
+import { blueGrey } from '@material-ui/core/colors';
 
-function MinusSquare(props) {
-  return (
-    <SvgIcon fontSize="inherit" style={{ width: 14, height: 14 }} {...props}>
-      {/* tslint:disable-next-line: max-line-length */}
-      <path d="M22.047 22.074v0 0-20.147 0h-20.12v0 20.147 0h20.12zM22.047 24h-20.12q-.803 0-1.365-.562t-.562-1.365v-20.147q0-.776.562-1.351t1.365-.575h20.147q.776 0 1.351.575t.575 1.351v20.147q0 .803-.575 1.365t-1.378.562v0zM17.873 11.023h-11.826q-.375 0-.669.281t-.294.682v0q0 .401.294 .682t.669.281h11.826q.375 0 .669-.281t.294-.682v0q0-.401-.294-.682t-.669-.281z" />
-    </SvgIcon>
-  );
-}
-
-function PlusSquare(props) {
-  return (
-    <SvgIcon fontSize="inherit" style={{ width: 14, height: 14 }} {...props}>
-      {/* tslint:disable-next-line: max-line-length */}
-      <path d="M22.047 22.074v0 0-20.147 0h-20.12v0 20.147 0h20.12zM22.047 24h-20.12q-.803 0-1.365-.562t-.562-1.365v-20.147q0-.776.562-1.351t1.365-.575h20.147q.776 0 1.351.575t.575 1.351v20.147q0 .803-.575 1.365t-1.378.562v0zM17.873 12.977h-4.923v4.896q0 .401-.281.682t-.682.281v0q-.375 0-.669-.281t-.294-.682v-4.896h-4.923q-.401 0-.682-.294t-.281-.669v0q0-.401.281-.682t.682-.281h4.923v-4.896q0-.401.294-.682t.669-.281v0q.401 0 .682.281t.281.682v4.896h4.923q.401 0 .682.281t.281.682v0q0 .375-.281.669t-.682.294z" />
-    </SvgIcon>
-  );
-}
-
-function CloseSquare(props) {
-  return (
-    <SvgIcon className="close" fontSize="inherit" style={{ width: 14, height: 14 }} {...props}>
-      {/* tslint:disable-next-line: max-line-length */}
-      <path d="M17.485 17.512q-.281.281-.682.281t-.696-.268l-4.12-4.147-4.12 4.147q-.294.268-.696.268t-.682-.281-.281-.682.294-.669l4.12-4.147-4.12-4.147q-.294-.268-.294-.669t.281-.682.682-.281.696 .268l4.12 4.147 4.12-4.147q.294-.268.696-.268t.682.281 .281.669-.294.682l-4.12 4.147 4.12 4.147q.294.268 .294.669t-.281.682zM22.047 22.074v0 0-20.147 0h-20.12v0 20.147 0h20.12zM22.047 24h-20.12q-.803 0-1.365-.562t-.562-1.365v-20.147q0-.776.562-1.351t1.365-.575h20.147q.776 0 1.351.575t.575 1.351v20.147q0 .803-.575 1.365t-1.378.562v0z" />
-    </SvgIcon>
-  );
-}
-
-function TransitionComponent(props) {
-  const style = useSpring({
-    from: { opacity: 0, transform: 'translate3d(20px,0,0)' },
-    to: { opacity: props.in ? 1 : 0, transform: `translate3d(${props.in ? 0 : 20}px,0,0)` },
-  });
-
-  return (
-    <animated.div style={style}>
-      <Collapse {...props} />
-    </animated.div>
-  );
-}
-
-TransitionComponent.propTypes = {
-  /**
-   * Show the component; triggers the enter or exit states
-   */
-  in: PropTypes.bool,
-};
-
-const StyledTreeItem = withStyles((theme) => ({
-  iconContainer: {
-    '& .close': {
-      opacity: 0.3,
-    },
+const TREE_SERVICE_API = '/api/tree'
+const TABLE_SERVICE_API = '/api/table'
+const useStyles = makeStyles((theme) => ({
+  container: {
+    display: 'grid',
+    // gridTemplateColumns: 'repeat(12, 1fr)',
+    gridGap: theme.spacing(3),
+    padding: theme.spacing(3),
   },
-  group: {
-    marginLeft: 7,
-    paddingLeft: 18,
-    borderLeft: `1px dashed ${fade(theme.palette.text.primary, 0.4)}`,
+  paper: {
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.primary,
+    whiteSpace: 'nowrap',
+    marginBottom: theme.spacing(1),
+    width: '100%',
+    
   },
-}))((props) => <TreeItem {...props} TransitionComponent={TransitionComponent} />);
-
-const useStyles = makeStyles({
-  root: {
-    height: 264,
-    flexGrow: 1,
-    maxWidth: 400,
+  chart: {
+    height: 800,
+    maxHeight: 800,
+    backgroundColor: blueGrey[50],
   },
-});
-
-
-// Recursive func
-const renderTree = (node) => {
-  if(node !== null){
-    let nLabel = ''.concat(node.name, ' -- ', node.value)
-    return (
-      <StyledTreeItem key={node.id} nodeId={node.id} label={nLabel}>
-        {
-          Array.isArray(node.children) ? 
-          node.children.map((node) => { return renderTree(node) }) :
-          null
-        }
-      </StyledTreeItem>
-    )
+  divider: {
+    margin: theme.spacing(2, 0),
+  },
+  left:{
+    marginRight: 5,
+    overflow: "hidden",
+  },
+  right:{
+    marginLeft: 5,
   }
-  return
-}
+}));
 
+export default function TreePage() {
+  const [state, setState] = useState({isFetching: false, data: {}, table: []}) // Current state, funcs to update state
+  // Run function after each render by default
+  useEffect(() => {
+    
+    // fetching Tree Data
+    const fetchData = async () => {
+      try {
+        setState({data: state.data, table: state.table, isFetching: true});
+        const res_tree = await axios.get(TREE_SERVICE_API)
+        const res_tbl  = await axios.get(TABLE_SERVICE_API)
+        setState({data: res_tree.data, table: res_tbl.data, isFetching: false})
+      } catch (error) {
+        console.log("Error in fetchData hook: ", error)
+        setState({data: state.data, table: state.table, isFetching: false});
+      }
+    };
+    fetchData();
+  }, []) // Run only one time
 
-// ------- Render Page -------- //
-const TreePage = (props) => {
   const classes = useStyles();
 
-  if(!props.isFetching && props.data){
+  if(!state.isFetching && state.data && state.table){
     return(
-        <TreeView
-          className={classes.root}
-          defaultExpanded={['1']}
-          defaultCollapseIcon={<MinusSquare />}
-          defaultExpandIcon={<PlusSquare />}
-          defaultEndIcon={<CloseSquare />}
-        >
-          {renderTree(props.data)}
-        </TreeView>
+      <div className={classes.container}>
+        <Grid container spacing={2}>
+          <Grid item justify="center" xs={12}>
+            <Paper className={classes.paper}>
+              <h1>Display Hierarchical Data with React, and NodeJS</h1>
+              <hr />
+              <h3>Abstract</h3>
+              <p>
+                In the Tree view, I display node's name and its value.
+                Node's value is calculated by adding up the value of all the child nodes.
+              </p>
+              <p>
+                The table on the right side displays the given dataset.
+              </p>
+            </Paper>
+          </Grid>
+          <Grid item xs={8} >
+            <Paper className={[classes.paper, classes.chart, classes.left]}>
+              <TreeDisplay data={state.data} />
+            </Paper>
+          </Grid>
+          <Grid item xs={4}>
+            <Paper className={[classes.paper, classes.chart, classes.right]}>
+              <TableDisplay data={state.table} />
+            </Paper>
+          </Grid>
+        </Grid>
+      </div>
     )
   } else {
     return(
-      <div className="App">
-        <h1>Waiting to fetch Tree data...</h1>
+      <div>
+        <h2>Fetching data from APIs...</h2>
       </div>
     )
   }
-};
-
-export default TreePage;
+  
+}

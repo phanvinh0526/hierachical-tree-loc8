@@ -55,10 +55,8 @@ module.exports = class DataModel{
   static fetchDataTree(cb){
     fetchRawDataFromCSV(rawData => {
       let root = null
-
       // Get ID mapping
       const idMapping = idMappingFunc(rawData)
-
       // Handle root element
       rawData.forEach(ele => {
         if(ele.parent_id === ele.id){
@@ -75,6 +73,13 @@ module.exports = class DataModel{
       // Adding the value of the child nodes
       root = deepSearch(root)
       cb(root)
+    })
+  }
+
+  static fetchDataTable(cb){
+    fetchRawDataFromCSV(rawData => {
+      // Return table data
+      cb(rawData)
     })
   }
 }

@@ -1,9 +1,13 @@
 const DataModel = require('../models/DataModel')
 
-exports.getIndex = (req, res, next) => {
-  DataModel.fetchDataTree(root => {
-    // Response client
-    res.send(JSON.stringify(root))
+exports.getTree = (req, res, next) => {
+  DataModel.fetchDataTree(data => {
+    res.send(JSON.stringify(data))
   })
+}
 
+exports.getTable = (req, res, next) =>{
+  DataModel.fetchDataTable(data => {
+    res.send(JSON.stringify(data))
+  })
 }

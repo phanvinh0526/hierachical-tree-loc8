@@ -1,11 +1,11 @@
 import React from 'react';
-import TreeComponent from './components/TreeComponent'
+import TreePage from './pages/TreePage'
 import './App.css';
 
 function App(){
   return (
     <div className="App">
-      <TreeComponent />
+      <TreePage />
     </div>
   )
 }
