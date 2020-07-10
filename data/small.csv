@@ -1,0 +1,11 @@
+id,name,parent_id,value
+1,Kropf,1,48.67
+2,Chive,1,19.15
+3,Mandrake,2,64.16
+4,Hanson,3,36.46
+5,Fulton,1,6.92
+6,Ruskin,5,5.35
+7,Lake View,3,77.96
+8,Merchant,6,60.09
+9,Luster,1,60.13
+10,Cherokee,1,96.37

@@ -1,0 +1,9 @@
+# exclude dependencies
+node_modules/
+
+# exclude production
+/build
+
+# exclude testing
+
+/coverage
